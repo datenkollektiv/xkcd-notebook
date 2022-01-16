@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: xkcd-notebook
+  name: xkcd-notebook
+  namespace: xkcd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: xkcd-notebook
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: xkcd-notebook
+    spec:
+      containers:
+        - image: xkcd-notebook
+          name: xkcd-notebook
+          # this is only required for the _local_ Minikube setup!
+          imagePullPolicy: Never
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "1024Mi"
+              cpu: "1000m"
+          env:
+            - name: JUPYTER_ENABLE_LAB
+              value: "true"
+            - name: JUPYTER_TOKEN
+              value: "xkcd"
+          volumeMounts:
+              - name: work
+                mountPath: /home/jovyan/work
+              - name: aws-credentials
+                mountPath: /home/jovyan/.aws
+          ports:
+          - containerPort: 8888
+      volumes:
+        - name: aws-credentials
+          secret:
+            secretName: aws-credentials
+        - name: work
+          hostPath:
+            path: /workspace/work
+status: {}

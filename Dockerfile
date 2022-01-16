@@ -19,4 +19,7 @@ RUN pip install graphviz
 RUN pip install boto3
 RUN pip install smart_open
 
+# Add support for trino/Hive
+RUN pip install pyhive
+
 RUN rm -rf /home/jovyan/.cache/matplotlib/
