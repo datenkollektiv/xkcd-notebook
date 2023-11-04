@@ -17,8 +17,10 @@ Please check the post mentioned above for more details.
 
 ```shell
 docker compose up
-xkcd_1  | Executing the command: jupyter lab
-xkcd_1  | [I 16:44:48.348 LabApp] Writing notebook server cookie secret to /home/jovyan/.local/share/jupyter/runtime/notebook_cookie_secret
+[+] Building 0.0s (0/0)                                                        docker:desktop-linux
+[+] Running 2/2
+ ✔ Container xkcd-demo-minio-1                    Running                                      0.0s 
+ ✔ Container xkcd-demo-xkcd-scipy-notebook-lab-1  Started                                      0.0s 
 ```
 
 > Note: The token of this setup is `xkcd`!
@@ -57,7 +59,7 @@ RUN apt-get install graphviz
 RUN pip install graphviz
 ```
 
-Check the [Introduction to Graphviz in Jupyter Notebook](https://h1ros.github.io/posts/introduction-to-graphviz-in-jupyter-notebook/) for more in-depth information. 
+Check the [Introduction to Graphviz in Jupyter Notebook](https://h1ros.github.io/posts/introduction-to-graphviz-in-jupyter-notebook/) for more in-depth information.
 
 ## Read data from an S3 bucket
 
@@ -91,3 +93,7 @@ Inside your Jupyter notebook:
 ```Python
 import findspark
 ```
+
+## Finally Machine Learning with `scikit-learn`
+
+[`scikit-learn`](https://scikit-learn.org/stable/)

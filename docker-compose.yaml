@@ -1,12 +1,34 @@
 version: '3'
 services:
-  xkcd-jupyterhub:
+  xkcd-scipy-notebook-lab:
     build: .
     ports:
      - "127.0.0.1:8888:8888"
     volumes:
      - ./work:/home/jovyan/work
-     - .aws/credentials:/home/jovyan/.aws/credentials
     environment:
       - JUPYTER_ENABLE_LAB=true
       - JUPYTER_TOKEN=xkcd
+      - MINIO_SERVER_ACCESS_KEY=minio-access-key
+      - MINIO_SERVER_SECRET_KEY=minio-secret-key
+
+  # https://bitnami.com/stack/minio/containers
+  # https://hub.docker.com/r/bitnami/minio
+  minio:
+    # https://hub.docker.com/r/bitnami/minio/tags
+    image: docker.io/bitnami/minio:2023.11.1
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    environment:
+      - MINIO_ROOT_USER=minio-root-user
+      - MINIO_ROOT_PASSWORD=minio-root-password
+      - MINIO_SERVER_ACCESS_KEY=minio-access-key
+      - MINIO_SERVER_SECRET_KEY=minio-secret-key
+      - MINIO_DEFAULT_BUCKETS=raw-data,processed-data
+    volumes:
+      - 'minio_data:/bitnami/minio/data'
+
+volumes:
+  minio_data:
+    driver: local

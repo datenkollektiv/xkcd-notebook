@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker-compose -p xkcd-demo down
+docker-compose down
