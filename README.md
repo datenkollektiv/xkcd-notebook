@@ -94,6 +94,23 @@ Inside your Jupyter notebook:
 import findspark
 ```
 
+## Sailing logbook from GPX tracks
+
+`work/logbook/navionics_logbook.ipynb` turns [Navionics Boating App](https://www.navionics.com/)
+GPX exports into per-trip summary tables, XKCD-style route maps with a simplified
+coastline, an optional interactive [folium](https://python-visualization.github.io/folium/)
+map, and speed profiles.
+
+```Dockerfile
+RUN pip install folium
+RUN pip install shapely
+```
+
+The coastlines in `work/logbook/coastlines/*.geojson` (derived from
+[Natural Earth](https://www.naturalearthdata.com/) 1:10m) are committed. The GPX
+exports are large and **gitignored** — place your own exports in `work/datasets/`
+under the filenames referenced in the notebook's `TRIPS` dict.
+
 ## Finally Machine Learning with `scikit-learn`
 
 [`scikit-learn`](https://scikit-learn.org/stable/)

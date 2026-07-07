@@ -22,4 +22,8 @@ RUN pip install smart_open
 # Add support for trino/Hive
 RUN pip install pyhive
 
+# Add mapping libraries for the GPX sailing logbook (work/logbook/)
+RUN pip install folium
+RUN pip install shapely
+
 RUN rm -rf /home/jovyan/.cache/matplotlib/
