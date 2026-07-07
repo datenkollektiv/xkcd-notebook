@@ -1,4 +1,3 @@
-version: '3'
 services:
   xkcd-scipy-notebook-lab:
     build: .
@@ -12,22 +11,40 @@ services:
       - MINIO_SERVER_ACCESS_KEY=minio-access-key
       - MINIO_SERVER_SECRET_KEY=minio-secret-key
 
-  # https://bitnami.com/stack/minio/containers
-  # https://hub.docker.com/r/bitnami/minio
+  # Official MinIO (S3-compatible object store). Replaces docker.io/bitnami/minio,
+  # which Broadcom removed from Docker Hub in Aug 2025.
+  # https://hub.docker.com/r/minio/minio
   minio:
-    # https://hub.docker.com/r/bitnami/minio/tags
-    image: docker.io/bitnami/minio:2023.11.1
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
+    command: server /data --console-address ":9001"
+    # Host ports are overridable so a local clash (e.g. an MQTT broker already on
+    # 9001) can be sidestepped without editing this file: MINIO_CONSOLE_PORT=9101 just up
     ports:
-      - '9000:9000'
-      - '9001:9001'
+      - '${MINIO_API_PORT:-9000}:9000'       # S3 API
+      - '${MINIO_CONSOLE_PORT:-9001}:9001'   # web console
     environment:
       - MINIO_ROOT_USER=minio-root-user
       - MINIO_ROOT_PASSWORD=minio-root-password
-      - MINIO_SERVER_ACCESS_KEY=minio-access-key
-      - MINIO_SERVER_SECRET_KEY=minio-secret-key
-      - MINIO_DEFAULT_BUCKETS=raw-data,processed-data
     volumes:
-      - 'minio_data:/bitnami/minio/data'
+      - 'minio_data:/data'
+
+  # One-shot: wait for MinIO, then create the buckets and the app credential the
+  # setup expects. The official image has no MINIO_DEFAULT_BUCKETS auto-create,
+  # so this reproduces what the old Bitnami image did.
+  # https://hub.docker.com/r/minio/mc
+  minio-init:
+    image: minio/mc:RELEASE.2025-08-13T08-35-41Z
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      until mc alias set local http://minio:9000 minio-root-user minio-root-password; do echo 'waiting for minio...'; sleep 2; done;
+      mc mb --ignore-existing local/raw-data;
+      mc mb --ignore-existing local/processed-data;
+      mc admin user add local minio-access-key minio-secret-key || true;
+      mc admin policy attach local readwrite --user minio-access-key || true;
+      echo 'minio provisioning done';
+      "
 
 volumes:
   minio_data:

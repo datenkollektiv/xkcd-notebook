@@ -31,6 +31,10 @@ logbook notebook end-to-end in the image as a smoke test).
 
 Plain Docker Compose (`docker compose up`) still works if you prefer not to use `just`.
 
+The MinIO web console is on [http://localhost:9001/](http://localhost:9001/) (S3 API on `:9000`).
+If port `9001` (or `9000`) is already taken on your machine, override it without editing any
+file: `MINIO_CONSOLE_PORT=9101 just up` (or `MINIO_API_PORT=9100`).
+
 ### With Minikube
 
 ```shell
@@ -95,6 +99,8 @@ import findspark
 GPX exports into per-trip summary tables, XKCD-style route maps with a simplified
 coastline, an optional interactive [folium](https://python-visualization.github.io/folium/)
 map, and speed profiles.
+
+![Sardinia -> Corsica](./sardinia-corsica.png)
 
 ```Dockerfile
 RUN pip install folium

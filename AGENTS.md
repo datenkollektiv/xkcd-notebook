@@ -43,9 +43,11 @@ There is no test suite or linter; `just validate` is the closest thing to a chec
 
 ## Key Conventions
 
-- **The XKCD look** comes from matplotlib's `plt.xkcd()` context plus the
-  `fonts-humor-sans` package installed in the image — the font must be present in the
-  container, not just referenced.
+- **The XKCD look** comes from matplotlib's `plt.xkcd()` context plus a hand-drawn font
+  installed in the image. matplotlib 3.11+ looks for **Comic Neue** (`fonts-comic-neue`);
+  it dropped "Humor Sans" from `plt.xkcd()`'s font list, so a missing Comic Neue silently
+  falls back to DejaVu (sketch wiggle stays, but the lettering isn't hand-drawn). The
+  font must be present in the container, not just referenced.
 - **New examples go in the topic subfolder** under `work/` (e.g. a new classifier demo
   belongs in `work/linear-classifiers/`), not at the top level.
 - **Secrets are container env, not code:** the JupyterHub token, MinIO keys, and AWS
