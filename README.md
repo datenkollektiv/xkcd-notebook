@@ -13,38 +13,33 @@ Please check the post mentioned above for more details.
 
 > [jupyterhub](https://jupyter.org/hub) - A multi-user version of the notebook designed for companies, classrooms and research labs
 
-### With Docker Compose
+Task automation lives in a [`justfile`](https://github.com/casey/just) — run `just --list` to see everything.
+
+### With `just` (Docker Compose)
 
 ```shell
-docker compose up
-[+] Building 0.0s (0/0)                                                        docker:desktop-linux
-[+] Running 2/2
- ✔ Container xkcd-demo-minio-1                    Running                                      0.0s 
- ✔ Container xkcd-demo-xkcd-scipy-notebook-lab-1  Started                                      0.0s 
+just up      # start JupyterLab (:8888, token 'xkcd') + MinIO, detached
+just open    # open the Lab in your browser (token pre-filled)
+just down    # stop and remove the containers
 ```
 
-> Note: The token of this setup is `xkcd`!
+Other handy recipes: `just build` (rebuild the image after editing the `Dockerfile`),
+`just rebuild` (build + restart), `just logs`, and `just validate` (run the sailing
+logbook notebook end-to-end in the image as a smoke test).
 
-Visit your local jupyterhub [http://localhost:8888/](http://localhost:8888/).
+> Note: The token of this setup is `xkcd`! Visit [http://localhost:8888/](http://localhost:8888/).
+
+Plain Docker Compose (`docker compose up`) still works if you prefer not to use `just`.
 
 ### With Minikube
 
-Build the container in `docker-env`:
-
 ```shell
-eval $(minikube docker-env)
-docker build -t xkcd-notebook .
+just minikube-build     # eval $(minikube docker-env) && docker build -t xkcd-notebook .
+just minikube-deploy    # namespace + aws-credentials secret + kubectl apply -f k8s/
+just minikube-forward   # port-forward the notebook pod to localhost:8888
 ```
 
-...once the image is successfully built and tagged...
-
-```shell
-kubectl create namespace xkcd
-kubectl -n xkcd create secret generic aws-credentials --from-file=.aws/credentials
-kubectl -n xkcd apply -f k8s/xkcd-notebook-deployment.yaml
-NOTEBOOK_POD_NAME=$(kubectl get pods -n xkcd -l app=xkcd-notebook -o json | jq -r '.items[0].metadata.name')
-kubectl -n xkcd port-forward ${NOTEBOOK_POD_NAME} 8888:8888
-```
+`just minikube-deploy` expects `.aws/credentials` to exist locally (mounted as a secret).
 
 > Note: The token of this setup is `xkcd`!
 

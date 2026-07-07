@@ -27,15 +27,19 @@ is the notebooks under `work/` and the charts they render.
 
 ## Development Workflow
 
-- **Start the environment (Docker Compose):** `./up.sh` (detached) or `docker compose up`.
+Task automation lives in the `justfile` — run `just --list` to see every recipe.
+There is no test suite or linter; `just validate` is the closest thing to a check.
+
+- **Start the environment (Docker Compose):** `just up` (detached).
   Lab is at http://localhost:8888/ — JupyterHub token is `xkcd`. MinIO console at :9001.
-- **Stop:** `./down.sh`.
-- **Rebuild after changing `Dockerfile`:** `docker compose build`.
-- **Validate a change:** re-run the affected notebook end-to-end (restart kernel & run
-  all, or execute headless) and confirm every cell runs clean and the chart renders.
-  There is no test suite, linter, or task runner.
-- **Minikube path:** build into the Minikube docker-env, then `kubectl apply -f k8s/`
-  and port-forward — see `README.md`.
+  `just open` opens the Lab with the token pre-filled.
+- **Stop:** `just down`.
+- **Rebuild after changing `Dockerfile`:** `just build` (or `just rebuild` to build + restart).
+- **Validate a change:** `just validate` runs the sailing logbook end-to-end in the image
+  (headless restart-kernel-run-all); `just execute <work/….ipynb>` does the same for any
+  notebook. Confirm every cell runs clean and the chart renders.
+- **Minikube path:** `just minikube-build`, `just minikube-deploy`, then `just minikube-forward`
+  — see `README.md` for the `.aws/credentials` prerequisite.
 
 ## Key Conventions
 
@@ -60,6 +64,7 @@ is the notebooks under `work/` and the charts they render.
 
 ## Important Files
 
+- `justfile` — task automation (environment up/down, image build, notebook validation, Minikube); `just --list`.
 - `README.md` — how to run the environment (Docker Compose and Minikube) and the extra tooling (graphviz, boto3, Spark, scikit-learn).
 - `Dockerfile` — the exact Python/system stack every notebook can rely on.
 - `docker-compose.yaml` — services, ports, tokens, and MinIO bucket setup.
